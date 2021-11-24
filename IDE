@@ -31,7 +31,7 @@ nmap -sT -Pn -A --script vuln -p- -T4 -v target_ip_address
 
 
 #port 62337 is running http, so let's open the page in a browser
-http://10.10.87.74:62337/
+http://target_ip_address:62337/
 Codiad 2.8.4
 
 #from the note above, we have a username that is john telling us to use the default password. I'm going to assume it is password. We test it and it works! john:password
